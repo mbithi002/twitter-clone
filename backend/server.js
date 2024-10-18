@@ -6,6 +6,7 @@ import express from "express";
 
 // routes
 import authRoutes from "./routes/auth-routes.js";
+import postRoutes from "./routes/post-routes.js";
 import userRoutes from "./routes/user-routes.js";
 
 // utility func
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 app.get("/", (req, res) => {
   res.json({
