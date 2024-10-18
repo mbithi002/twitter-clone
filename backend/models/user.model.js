@@ -23,18 +23,18 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     followers: {
-      type: [mongoose.Schema.Types.ObjectId], // Array of ObjectId
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "user",
-      default: [], // Default is an empty array
+      default: [],
     },
     following: {
-      type: [mongoose.Schema.Types.ObjectId], // Array of ObjectId
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "user",
-      default: [], // Default is an empty array
+      default: [],
     },
     profileImg: {
       type: String,
-      default: "", // Removed extra comma
+      default: "",
     },
     coverImg: {
       type: String,

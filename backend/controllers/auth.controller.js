@@ -6,13 +6,11 @@ export const signup = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
 
-    // Check if username or email is already taken
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken" });
@@ -23,7 +21,6 @@ export const signup = async (req, res) => {
       return res.status(400).json({ error: "Email is already taken" });
     }
 
-    // Validate password length
     if (password.length < 6) {
       return res
         .status(400)
