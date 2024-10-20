@@ -1,48 +1,53 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 import XSvg from "../../../components/svgs/X";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { MdOutlineMail, MdPassword } from "react-icons/md";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
         username: "",
         password: "",
     });
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
 
-    const { mutate, isError, isPending, fullName, password } = useMutation({
+    const {
+        mutate: loginMutation,
+        isPending,
+        isError,
+        error,
+    } = useMutation({
         mutationFn: async ({ username, password }) => {
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ username, password }),
-                })
-                const data = await res.json()
-                console.log(data);
-                if (data.error) throw new Error(data.error) || "Failed to login";
-                return data;
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || "Something went wrong");
+                }
             } catch (error) {
-                console.log(error);
-                throw new Error(error.message)
+                throw new Error(error);
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['authUser'] })
+            // refetch the authUser
+            queryClient.invalidateQueries({ queryKey: ["authUser"] });
         },
-        onError: (error) => {
-            toast.error(error.message)
-        }
-    })
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutate(formData);
+        loginMutation(formData);
     };
 
     const handleInputChange = (e) => {
@@ -82,11 +87,9 @@ const LoginPage = () => {
                         />
                     </label>
                     <button className='btn rounded-full btn-primary text-white'>
-                        {
-                            isPending ? "Loading..." : "Login"
-                        }
+                        {isPending ? "Loading..." : "Login"}
                     </button>
-                    {isError && <p className='text-red-500'>{error.message}}</p>}
+                    {isError && <p className='text-red-500'>{error.message}</p>}
                 </form>
                 <div className='flex flex-col gap-2 mt-4'>
                     <p className='text-white text-lg'>{"Don't"} have an account?</p>

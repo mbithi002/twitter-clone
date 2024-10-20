@@ -1,4 +1,6 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from "react";
+import { toast } from 'react-hot-toast';
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { CiImageOn } from "react-icons/ci";
 import { IoCloseSharp } from "react-icons/io5";
@@ -6,11 +8,41 @@ import { IoCloseSharp } from "react-icons/io5";
 const CreatePost = () => {
     const [text, setText] = useState("");
     const [img, setImg] = useState(null);
+    const queryClient = useQueryClient()
 
     const imgRef = useRef(null);
 
-    const isPending = false;
-    const isError = false;
+    const { data: authUser } = useQuery({ queryKey: ['authUser'] })
+
+    const { mutate: createPost, isPending, isError } = useMutation({
+        mutationFn: async ({ text, img }) => {
+            try {
+                const res = await fetch('/api/posts/create', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text, img, })
+                })
+                const data = await res.data
+                if (!res.ok) {
+                    throw new Error(data.message) || "Failed to create post"
+                }
+                return data
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
+        onSuccess: () => {
+            setText("")
+            setImg(null)
+            toast.success("post created successfully")
+            queryClient.invalidateQueries(['posts'])
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
 
     const data = {
         profileImg: "/avatars/boy1.png",
@@ -18,7 +50,7 @@ const CreatePost = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert("Post created successfully");
+        createPost({ text, img })
     };
 
     const handleImgChange = (e) => {
@@ -36,7 +68,7 @@ const CreatePost = () => {
         <div className='flex p-4 items-start gap-4 border-b border-gray-700'>
             <div className='avatar'>
                 <div className='w-8 rounded-full'>
-                    <img src={data.profileImg || "/avatar-placeholder.png"} />
+                    <img src={authUser.profileImg || "/avatar-placeholder.png"} />
                 </div>
             </div>
             <form className='flex flex-col gap-2 w-full' onSubmit={handleSubmit}>
@@ -72,7 +104,6 @@ const CreatePost = () => {
                         {isPending ? "Posting..." : "Post"}
                     </button>
                 </div>
-                {isError && <div className='text-red-500'>Something went wrong</div>}
             </form>
         </div>
     );

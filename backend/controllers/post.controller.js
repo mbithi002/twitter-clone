@@ -1,4 +1,4 @@
-import { v2 as cloudinay } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
@@ -17,7 +17,7 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ error: "post must have text or image" });
     }
     if (img) {
-      const uploadedResponse = await cloudinay.uploader.upload(img);
+      const uploadedResponse = await cloudinary.uploader.upload(img);
       img = uploadedResponse.secure_url;
     }
 
