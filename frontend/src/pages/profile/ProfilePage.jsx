@@ -7,12 +7,14 @@ import EditProfileModal from "./EditProfileModal";
 
 import { POSTS } from "../../utils/db/dummy";
 
+import { useQuery } from "@tanstack/react-query";
 import { FaLink } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 
 const ProfilePage = () => {
+    const { data: authUser, error: userError, isLoading: fetchingUser } = useQuery({ queryKey: ['authUser'] })
     const [coverImg, setCoverImg] = useState(null);
     const [profileImg, setProfileImg] = useState(null);
     const [feedType, setFeedType] = useState("posts");
