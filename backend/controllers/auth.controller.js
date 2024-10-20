@@ -62,26 +62,19 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    // Check if the user exists
     const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid username or password!" });
-    }
-
-    // Compare the entered password with the stored hashed password
     const isPasswordCorrect = await bcrypt.compare(
-      String(password),
-      user.password
+      password,
+      user?.password || ""
     );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ error: "Invalid username or password!" });
+
+    if (!user || !isPasswordCorrect) {
+      return res.status(400).json({ error: "Invalid username or password" });
     }
 
-    // If successful, generate a token and set the cookie
     generateTokenAndSetCookie(user._id, res);
 
-    return res.status(200).json({
+    res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
@@ -92,8 +85,8 @@ export const login = async (req, res) => {
       coverImg: user.coverImg,
     });
   } catch (error) {
-    console.error("Error in login controller:", error.message);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.log("Error in login controller", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
