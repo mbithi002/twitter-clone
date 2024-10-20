@@ -151,10 +151,10 @@ export const getPosts = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    res.status(200).json({ posts });
+    res.status(200).json(posts);
   } catch (error) {
-    console.log("Error in getPoss: ", error.message);
-    return res.status(500).json({ error: "Internal server error" });
+    console.log("Error in getAllPosts controller: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
