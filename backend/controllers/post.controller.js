@@ -176,7 +176,7 @@ export const getLikedPosts = async (req, res) => {
         select: "-password",
       });
 
-    res.status(200).json({ likedPosts });
+    res.status(200).json(likedPosts);
   } catch (error) {
     console.log("Error in getLikedPosts: ", error);
     return res.status(500).json({ error: "Internal server error" });
